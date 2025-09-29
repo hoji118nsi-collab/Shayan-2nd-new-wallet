@@ -19,29 +19,25 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.4'
+          flutter-version: '3.13.4'  # نسخه Dart >= 3.6
 
-      # 3. غیر فعال کردن analytics
+      # 3. غیر فعال کردن analytics (نسخه جدید Flutter)
       - name: Disable Flutter analytics
         run: flutter config --no-analytics
 
-      # 4. بررسی وضعیت Flutter
-      - name: Flutter doctor
-        run: flutter doctor
-
-      # 5. پاکسازی بیلدهای قدیمی و نصب dependencies
-      - name: Clean previous builds and get dependencies
+      # 4. پاکسازی بیلدهای قبلی و نصب dependencies
+      - name: Clean and get dependencies
         run: |
           flutter clean
           flutter pub get
 
-      # 6. بیلد APK
+      # 5. بیلد APK
       - name: Build APK
         run: flutter build apk --release
 
-      # 7. ذخیره خروجی APK
+      # 6. ذخیره خروجی APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: shayan_wallet_apk
+          name: shayan_wallet-apk
           path: build/app/outputs/flutter-apk/app-release.apk
