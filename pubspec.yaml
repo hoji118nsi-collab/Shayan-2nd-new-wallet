@@ -1,0 +1,51 @@
+name: shayan_wallet
+description: کیف پول شایان
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.6.2 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  flutter_local_notifications: ^19.4.2
+  fl_chart: ^1.1.1
+  cupertino_icons: ^1.0.8
+  path_provider: ^2.1.4
+  intl: ^0.20.2
+  table_calendar: ^3.0.9
+  persian_datetime_picker: ^3.2.0
+  fluttertoast: ^9.0.0
+  assets_audio_player: ^3.1.1   # فعلاً کامنت شد برای تست
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.13          # پایین آورده شد برای سازگاری با hive_generator
+  hive_generator: ^2.0.1
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/callofduty.jpg
+    - assets/images/pabji.jpg
+    - assets/images/need4speed.jpg
+    - assets/images/minecraft.jpg
+    - assets/sounds/
+
+  fonts:
+    - family: Shabnam
+      fonts:
+        - asset: assets/fonts/Shabnam.ttf
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/icons/app_icon.png"
+
