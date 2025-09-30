@@ -15,11 +15,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. نصب Flutter نسخه مناسب (Dart >= 3.6)
+      # 2. نصب Flutter با نسخه ثابت (Dart >= 3.6)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.4'   # Dart 3.6+ تضمین شده
+          flutter-version: '3.13.4'   # تضمین نسخه Dart >=3.6
 
       # 3. غیر فعال کردن analytics
       - name: Disable Flutter analytics
@@ -31,11 +31,11 @@ jobs:
           flutter clean
           flutter pub get
 
-      # 5. اجرای build APK
-      - name: Build APK (Release)
-        run: flutter build apk --release
+      # 5. بیلد APK (Release)
+      - name: Build APK
+        run: flutter build apk --release --no-shrink
 
-      # 6. ذخیره خروجی APK
+      # 6. ذخیره خروجی APK برای دانلود
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
