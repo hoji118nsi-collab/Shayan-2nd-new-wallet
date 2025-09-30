@@ -7,14 +7,14 @@ class PurchasesOverviewPage extends StatefulWidget {
   final Jalali? startDate;
   final Jalali? endDate;
 
-  PurchasesOverviewPage({this.startDate, this.endDate});
+  const PurchasesOverviewPage({Key? key, this.startDate, this.endDate}) : super(key: key);
 
   @override
   _PurchasesOverviewPageState createState() => _PurchasesOverviewPageState();
 }
 
 class _PurchasesOverviewPageState extends State<PurchasesOverviewPage> {
-  late Box<Transaction> transactionBox;
+  late final Box<Transaction> transactionBox;
   Jalali? startDate;
   Jalali? endDate;
 
@@ -56,20 +56,19 @@ class _PurchasesOverviewPageState extends State<PurchasesOverviewPage> {
   }
 
   List<Transaction> filteredTransactions() {
-    List<Transaction> allTx = transactionBox.values.toList();
-    // فقط تراکنش‌های هزینه
+    final allTx = transactionBox.values.toList();
     return allTx.where((tx) {
       if (tx.amount >= 0) return false;
 
       final txDate = Jalali.fromDateTime(tx.date);
-      bool afterStart = startDate == null || !txDate.isBefore(startDate!);
-      bool beforeEnd = endDate == null || !txDate.isAfter(endDate!);
+      final afterStart = startDate == null || !txDate.isBefore(startDate!);
+      final beforeEnd = endDate == null || !txDate.isAfter(endDate!);
       return afterStart && beforeEnd;
     }).toList();
   }
 
   Map<String, List<Transaction>> groupByCategory(List<Transaction> transactions) {
-    Map<String, List<Transaction>> grouped = {};
+    final Map<String, List<Transaction>> grouped = {};
     for (var cat in categories) grouped[cat] = [];
 
     for (var tx in transactions) {
@@ -90,12 +89,12 @@ class _PurchasesOverviewPageState extends State<PurchasesOverviewPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Transaction> txList = filteredTransactions();
-    Map<String, List<Transaction>> grouped = groupByCategory(txList);
+    final txList = filteredTransactions();
+    final grouped = groupByCategory(txList);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('خریدهای انجام شده'),
+        title: const Text('خریدهای انجام شده'),
         centerTitle: true,
       ),
       body: Stack(
@@ -108,7 +107,7 @@ class _PurchasesOverviewPageState extends State<PurchasesOverviewPage> {
           Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
                     Expanded(
@@ -119,7 +118,7 @@ class _PurchasesOverviewPageState extends State<PurchasesOverviewPage> {
                             : 'شروع: ${startDate!.formatCompactDate()}'),
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: pickEndDate,
@@ -135,23 +134,20 @@ class _PurchasesOverviewPageState extends State<PurchasesOverviewPage> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: grouped.entries.map((entry) {
-                      double total =
-                          entry.value.fold(0, (prev, tx) => prev + tx.amount);
+                      final total = entry.value.fold<int>(0, (prev, tx) => prev + tx.amount);
                       return Card(
                         color: Colors.white70,
-                        margin:
-                            EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                         child: ExpansionTile(
                           title: Text(
                             '${entry.key} (تعداد: ${entry.value.length}, مجموع: $total تومان)',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           children: entry.value.map((tx) {
                             final txJalali = Jalali.fromDateTime(tx.date);
                             return ListTile(
                               title: Text(tx.title),
-                              subtitle: Text(
-                                  'تاریخ: ${txJalali.formatCompactDate()}'),
+                              subtitle: Text('تاریخ: ${txJalali.formatCompactDate()}'),
                               trailing: Text('${tx.amount} تومان'),
                             );
                           }).toList(),
