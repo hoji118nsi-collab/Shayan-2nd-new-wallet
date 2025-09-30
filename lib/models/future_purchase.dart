@@ -5,10 +5,10 @@ part 'future_purchase.g.dart';
 @HiveType(typeId: 2)
 class FuturePurchase extends HiveObject {
   @HiveField(0)
-  String name;
+  final String name;
 
   @HiveField(1)
-  int price;
+  final int price;
 
   @HiveField(2)
   bool bought;
