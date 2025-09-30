@@ -5,7 +5,7 @@ import '../models/investment.dart';
 
 class TransferToInvestmentPage extends StatefulWidget {
   final int walletAmount;
-  TransferToInvestmentPage({required this.walletAmount});
+  const TransferToInvestmentPage({Key? key, required this.walletAmount}) : super(key: key);
 
   @override
   _TransferToInvestmentPageState createState() => _TransferToInvestmentPageState();
@@ -15,17 +15,18 @@ class _TransferToInvestmentPageState extends State<TransferToInvestmentPage> {
   final TextEditingController _controller = TextEditingController();
 
   void transfer() {
-    int amount = int.tryParse(_controller.text) ?? 0;
+    final int amount = int.tryParse(_controller.text) ?? 0;
     if (amount <= 0 || amount > widget.walletAmount) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('مقدار نامعتبر است!')),
+        const SnackBar(content: Text('مقدار نامعتبر است!')),
       );
       return;
     }
 
     final investBox = Hive.box<Investment>('investments');
     if (investBox.isEmpty) investBox.add(Investment(amount: 0));
-    int currentInvestment = investBox.getAt(0)!.amount;
+
+    final currentInvestment = investBox.getAt(0)?.amount ?? 0;
     investBox.putAt(0, Investment(amount: currentInvestment + amount));
 
     final transactionsBox = Hive.box<Transaction>('transactions');
@@ -45,21 +46,27 @@ class _TransferToInvestmentPageState extends State<TransferToInvestmentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('انتقال به صندوق سرمایه‌گذاری')),
+      appBar: AppBar(title: const Text('انتقال به صندوق سرمایه‌گذاری')),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('موجودی کیف پول: ${widget.walletAmount}'),
+            const SizedBox(height: 12),
             TextField(
               controller: _controller,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'مقدار انتقال'),
+              decoration: const InputDecoration(
+                labelText: 'مقدار انتقال',
+                border: OutlineInputBorder(),
+              ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: transfer,
-              child: Text('انتقال'),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2874A6)),
+              child: const Text('انتقال'),
             ),
           ],
         ),
