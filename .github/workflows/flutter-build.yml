@@ -19,14 +19,14 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.4'
+          flutter-version: '3.13.4'  # نسخه Dart >= 3.6
 
       # 3. غیر فعال کردن analytics
       - name: Disable Flutter analytics
         run: flutter config --no-analytics
 
-      # 4. پاکسازی بیلدهای قدیمی و نصب dependencies
-      - name: Clean and get dependencies
+      # 4. پاکسازی بیلدهای قبلی و نصب dependencies
+      - name: Clean previous builds and get dependencies
         run: |
           flutter clean
           flutter pub get
