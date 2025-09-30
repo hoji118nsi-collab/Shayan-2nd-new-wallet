@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.1.0 <4.0.0"
+  sdk: ">=3.6.2 <4.0.0"
 
 dependencies:
   flutter:
@@ -18,16 +18,16 @@ dependencies:
   path_provider: ^2.1.4
   intl: ^0.20.2
   table_calendar: ^3.0.9
-  persian_datetime_picker: ^3.0.9   # نسخه سازگار با Dart 3.1
-  fluttertoast: ^8.2.14               # نسخه سازگار با Dart 3.1
-  assets_audio_player: ^3.1.1         # نسخه پایدار با Dart 3.1
+  persian_datetime_picker: ^3.1.0
+  fluttertoast: ^8.2.14
+  assets_audio_player: ^3.1.1   # نسخه پایدار فعال
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.13          # پایین آورده شد برای سازگاری با hive_generator
   hive_generator: ^2.0.1
-  flutter_launcher_icons: ^0.14.4
+  # flutter_launcher_icons: ^0.14.4   # حذف شد تا conflict با flutter_test رفع شود
 
 flutter:
   uses-material-design: true
