@@ -3,25 +3,29 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/transaction.dart';
 
 class PastPurchasesPage extends StatefulWidget {
+  const PastPurchasesPage({Key? key}) : super(key: key);
+
   @override
   _PastPurchasesPageState createState() => _PastPurchasesPageState();
 }
 
 class _PastPurchasesPageState extends State<PastPurchasesPage> {
-  late Box<Transaction> transactionBox;
+  late final Box<Transaction> transactionBox;
   DateTime? startDate;
   DateTime? endDate;
 
   @override
   void initState() {
     super.initState();
-    transactionBox = Hive.box<Transaction>('transactions');
+    if (Hive.isBoxOpen('transactions')) {
+      transactionBox = Hive.box<Transaction>('transactions');
+    }
   }
 
   Future<void> pickStartDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(Duration(days: 30)),
+      initialDate: DateTime.now().subtract(const Duration(days: 30)),
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
@@ -39,34 +43,31 @@ class _PastPurchasesPageState extends State<PastPurchasesPage> {
   }
 
   List<Transaction> filteredTransactions() {
-    List<Transaction> allTx = transactionBox.values.toList();
-    // فقط تراکنش‌های هزینه (مقادیر منفی)
+    final allTx = transactionBox.values.toList();
     return allTx.where((tx) {
-      if (tx.amount >= 0) return false;
-      bool afterStart = startDate == null || !tx.date.isBefore(startDate!);
-      bool beforeEnd = endDate == null || !tx.date.isAfter(endDate!);
+      if (tx.amount >= 0) return false; // فقط هزینه
+      final afterStart = startDate == null || !tx.date.isBefore(startDate!);
+      final beforeEnd = endDate == null || !tx.date.isAfter(endDate!);
       return afterStart && beforeEnd;
     }).toList();
   }
 
   Map<String, List<Transaction>> groupByCategory(List<Transaction> transactions) {
-    Map<String, List<Transaction>> grouped = {};
+    final Map<String, List<Transaction>> grouped = {};
     for (var tx in transactions) {
-      String cat = tx.title;
-      grouped.putIfAbsent(cat, () => []);
-      grouped[cat]!.add(tx);
+      grouped.putIfAbsent(tx.title, () => []).add(tx);
     }
     return grouped;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Transaction> txList = filteredTransactions();
-    Map<String, List<Transaction>> grouped = groupByCategory(txList);
+    final txList = filteredTransactions();
+    final grouped = groupByCategory(txList);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('خریدهای انجام شده'),
+        title: const Text('خریدهای انجام شده'),
         centerTitle: true,
       ),
       body: Stack(
@@ -79,7 +80,7 @@ class _PastPurchasesPageState extends State<PastPurchasesPage> {
           Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
                     Expanded(
@@ -90,7 +91,7 @@ class _PastPurchasesPageState extends State<PastPurchasesPage> {
                             : 'شروع: ${startDate!.toLocal().toString().split(' ')[0]}'),
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: pickEndDate,
@@ -105,18 +106,20 @@ class _PastPurchasesPageState extends State<PastPurchasesPage> {
               Expanded(
                 child: ListView(
                   children: grouped.entries.map((entry) {
-                    double total = entry.value.fold(0, (prev, tx) => prev + tx.amount);
+                    final total = entry.value.fold<int>(0, (prev, tx) => prev + tx.amount);
                     return Card(
                       color: Colors.white70,
-                      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                       child: ExpansionTile(
                         title: Text(
-                            '${entry.key} (تعداد: ${entry.value.length}, مجموع: $total تومان)'),
+                          '${entry.key} (تعداد: ${entry.value.length}, مجموع: $total تومان)',
+                        ),
                         children: entry.value.map((tx) {
                           return ListTile(
                             title: Text(tx.title),
                             subtitle: Text(
-                                'تاریخ: ${tx.date.toLocal().toString().split(' ')[0]}'),
+                              'تاریخ: ${tx.date.toLocal().toString().split(' ')[0]}',
+                            ),
                             trailing: Text('${tx.amount} تومان'),
                           );
                         }).toList(),
