@@ -21,21 +21,23 @@ jobs:
         with:
           flutter-version: '3.13.4'  # نسخه Dart >= 3.6
 
-      # 3. غیر فعال کردن analytics (نسخه جدید Flutter)
+      # 3. غیر فعال کردن analytics
       - name: Disable Flutter analytics
         run: flutter config --no-analytics
 
-      # 4. پاکسازی بیلدهای قبلی و نصب dependencies
-      - name: Clean and get dependencies
-        run: |
-          flutter clean
-          flutter pub get
+      # 4. پاکسازی بیلدهای قبلی
+      - name: Clean project
+        run: flutter clean
 
-      # 5. بیلد APK
+      # 5. نصب dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # 6. بیلد APK
       - name: Build APK
         run: flutter build apk --release
 
-      # 6. ذخیره خروجی APK
+      # 7. ذخیره خروجی APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
