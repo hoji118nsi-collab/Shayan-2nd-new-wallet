@@ -6,29 +6,34 @@ import '../models/transaction.dart';
 import '../widgets/custom_button.dart';
 
 class FuturePurchasesPage extends StatefulWidget {
+  const FuturePurchasesPage({Key? key}) : super(key: key);
+
   @override
   _FuturePurchasesPageState createState() => _FuturePurchasesPageState();
 }
 
 class _FuturePurchasesPageState extends State<FuturePurchasesPage> with SingleTickerProviderStateMixin {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _priceController;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
-  late Box<FuturePurchase> box;
-  late Box<Transaction> walletBox;
+  late final Box<FuturePurchase> box;
+  late final Box<Transaction> walletBox;
 
   List<FuturePurchase> purchases = [];
-  final assetsAudioPlayer = AssetsAudioPlayer();
+  late final AssetsAudioPlayer assetsAudioPlayer;
 
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController();
+    _priceController = TextEditingController();
+    assetsAudioPlayer = AssetsAudioPlayer();
+
     box = Hive.box<FuturePurchase>('futurePurchases');
     walletBox = Hive.box<Transaction>('transactions');
     purchases = box.values.toList();
 
-    // Listen to box changes
     box.watch().listen((event) {
       setState(() {
         purchases = box.values.toList();
@@ -39,11 +44,11 @@ class _FuturePurchasesPageState extends State<FuturePurchasesPage> with SingleTi
   void _playSound() {
     try {
       assetsAudioPlayer.open(
-        Audio("assets/sounds/click.mp3"), // فایل صوتی کوتاه باید در پوشه assets/sounds اضافه شود
+        Audio("assets/sounds/click.mp3"),
         autoStart: true,
       );
     } catch (e) {
-      print("Error playing sound: $e");
+      debugPrint("Error playing sound: $e");
     }
   }
 
@@ -58,13 +63,16 @@ class _FuturePurchasesPageState extends State<FuturePurchasesPage> with SingleTi
     if (item.bought) return;
 
     final totalSaved = walletBox.values.fold<int>(
-        0, (sum, t) => t.amount > 0 ? sum + t.amount : sum);
+      0,
+      (sum, t) => t.amount > 0 ? sum + t.amount : sum,
+    );
 
     if (totalSaved >= item.price) {
       setState(() {
         item.bought = true;
       });
       item.save();
+
       walletBox.add(Transaction(
         title: 'خرید ${item.name}',
         amount: -item.price,
@@ -93,10 +101,8 @@ class _FuturePurchasesPageState extends State<FuturePurchasesPage> with SingleTi
       sizeFactor: animation,
       child: Card(
         color: item.bought ? Colors.grey.withOpacity(0.5) : Colors.orange.withOpacity(0.8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        margin: EdgeInsets.symmetric(vertical: 6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.symmetric(vertical: 6),
         child: ListTile(
           leading: Icon(
             item.bought ? Icons.check_circle : Icons.shopping_cart,
@@ -113,14 +119,12 @@ class _FuturePurchasesPageState extends State<FuturePurchasesPage> with SingleTi
           ),
           subtitle: Text(
             "قیمت: ${item.price} تومان",
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
           ),
           trailing: CustomButton(
             text: item.bought ? "خرید شده" : "تیک خرید",
             color: item.bought ? Colors.grey : Colors.white70,
-            onPressed: () {
-              _markBought(index);
-            },
+            onPressed: () => _markBought(index),
           ),
         ),
       ),
@@ -128,9 +132,17 @@ class _FuturePurchasesPageState extends State<FuturePurchasesPage> with SingleTi
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _priceController.dispose();
+    assetsAudioPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('لیست خریدهای آتی')),
+      appBar: AppBar(title: const Text('لیست خریدهای آتی')),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -139,44 +151,44 @@ class _FuturePurchasesPageState extends State<FuturePurchasesPage> with SingleTi
             fit: BoxFit.cover,
           ),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
                 TextField(
                   controller: _nameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "نام آیتم",
                     fillColor: Colors.white70,
                     filled: true,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextField(
                   controller: _priceController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "قیمت",
                     fillColor: Colors.white70,
                     filled: true,
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 CustomButton(
                   text: "افزودن به لیست",
-                  color: Color(0xFFF28C28),
+                  color: const Color(0xFFF28C28),
                   onPressed: () {
                     final name = _nameController.text.trim();
-                    final price = int.tryParse(_priceController.text) ?? 0;
+                    final price = int.tryParse(_priceController.text.trim()) ?? 0;
                     if (name.isEmpty || price <= 0) return;
                     _addItem(name, price);
                     _nameController.clear();
                     _priceController.clear();
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Expanded(
                   child: purchases.isEmpty
-                      ? Center(
+                      ? const Center(
                           child: Text(
                             'هیچ خرید آتی ثبت نشده',
                             style: TextStyle(
