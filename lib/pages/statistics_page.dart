@@ -5,6 +5,8 @@ import '../models/transaction.dart';
 import '../widgets/custom_button.dart';
 
 class StatisticsPage extends StatefulWidget {
+  const StatisticsPage({Key? key}) : super(key: key);
+
   @override
   _StatisticsPageState createState() => _StatisticsPageState();
 }
@@ -15,8 +17,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   int yearlyIncome = 0;
   int yearlyExpense = 0;
 
-  Map<String, int> categoryTotals = {};
-
+  final Map<String, int> categoryTotals = {};
   final List<String> categories = [
     'خوراکی',
     'تفریح',
@@ -44,7 +45,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     int yearInc = 0;
     int yearExp = 0;
 
-    categoryTotals.clear();
     for (var cat in categories) {
       categoryTotals[cat] = 0;
     }
@@ -53,15 +53,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
       // محاسبه درآمد و هزینه
       if (t.date.year == now.year) {
         if (t.date.month == now.month) {
-          if (t.amount > 0)
+          if (t.amount > 0) {
             monthInc += t.amount;
-          else
+          } else {
             monthExp += -t.amount;
+          }
         }
-        if (t.amount > 0)
+        if (t.amount > 0) {
           yearInc += t.amount;
-        else
+        } else {
           yearExp += -t.amount;
+        }
       }
 
       // محاسبه مجموع خریدها بر اساس دسته‌بندی برای نمودار
@@ -74,7 +76,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
             break;
           }
         }
-        if (!matched) categoryTotals['سایر'] = categoryTotals['سایر']! + (-t.amount);
+        if (!matched) {
+          categoryTotals['سایر'] = categoryTotals['سایر']! + (-t.amount);
+        }
       }
     }
 
@@ -90,12 +94,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
     final List<PieChartSectionData> sections = [];
     categoryTotals.forEach((category, amount) {
       if (amount > 0) {
-        sections.add(PieChartSectionData(
-          color: categoryColors[category],
-          value: amount.toDouble(),
-          title: '$category\n$amount',
-          titleStyle: TextStyle(color: Colors.white, fontSize: 12),
-        ));
+        sections.add(
+          PieChartSectionData(
+            color: categoryColors[category],
+            value: amount.toDouble(),
+            title: '$category\n$amount',
+            titleStyle: const TextStyle(color: Colors.white, fontSize: 12),
+          ),
+        );
       }
     });
     return sections;
@@ -105,7 +111,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   void initState() {
     super.initState();
     calculateStats();
-    Hive.box<Transaction>('transactions').watch().listen((event) {
+    Hive.box<Transaction>('transactions').watch().listen((_) {
       calculateStats();
     });
   }
@@ -113,7 +119,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('آمار ماهانه و سالانه')),
+      appBar: AppBar(title: const Text('آمار ماهانه و سالانه')),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -122,38 +128,38 @@ class _StatisticsPageState extends State<StatisticsPage> {
             fit: BoxFit.cover,
           ),
           SingleChildScrollView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 16),
-                Text(
+                const SizedBox(height: 16),
+                const Text(
                   'آمار ماه جاری',
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text('درآمد: $monthlyIncome تومان',
-                    style: TextStyle(color: Colors.white70)),
+                    style: const TextStyle(color: Colors.white70)),
                 Text('هزینه: $monthlyExpense تومان',
-                    style: TextStyle(color: Colors.white70)),
-                SizedBox(height: 24),
-                Text(
+                    style: const TextStyle(color: Colors.white70)),
+                const SizedBox(height: 24),
+                const Text(
                   'آمار سال جاری',
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text('درآمد: $yearlyIncome تومان',
-                    style: TextStyle(color: Colors.white70)),
+                    style: const TextStyle(color: Colors.white70)),
                 Text('هزینه: $yearlyExpense تومان',
-                    style: TextStyle(color: Colors.white70)),
-                SizedBox(height: 32),
-                Text(
+                    style: const TextStyle(color: Colors.white70)),
+                const SizedBox(height: 32),
+                const Text(
                   'نمودار خریدها',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -169,13 +175,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       centerSpaceRadius: 0,
                       borderData: FlBorderData(show: false),
                     ),
-                    swapAnimationDuration: Duration(milliseconds: 500),
+                    swapAnimationDuration: const Duration(milliseconds: 500),
                   ),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 CustomButton(
                   text: 'بازگشت',
-                  color: Color(0xFFF28C28),
+                  color: const Color(0xFFF28C28),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
