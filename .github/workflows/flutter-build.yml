@@ -1,10 +1,10 @@
 name: Build Flutter APK
 
 on:
-  workflow_dispatch:   # اجرای دستی
+  workflow_dispatch:
   push:
     branches:
-      - main           # یا برنچی که کد روشه
+      - main
 
 jobs:
   build:
@@ -15,29 +15,27 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # 2. نصب Flutter با نسخه مناسب Dart >=3.6
+      # 2. نصب Flutter با نسخه سازگار Dart >=3.1
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.4'  # نسخه Dart >= 3.6
+          flutter-version: '3.13.4'
 
       # 3. غیر فعال کردن analytics
       - name: Disable Flutter analytics
         run: flutter config --no-analytics
 
-      # 4. پاکسازی بیلدهای قبلی
-      - name: Clean project
-        run: flutter clean
+      # 4. پاکسازی بیلدهای قدیمی و نصب dependencies
+      - name: Clean previous builds and get dependencies
+        run: |
+          flutter clean
+          flutter pub get
 
-      # 5. نصب dependencies
-      - name: Get dependencies
-        run: flutter pub get
-
-      # 6. بیلد APK
+      # 5. بیلد APK
       - name: Build APK
         run: flutter build apk --release
 
-      # 7. ذخیره خروجی APK
+      # 6. ذخیره خروجی APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
