@@ -15,14 +15,14 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52, // ارتفاع دکمه
-      width: double.infinity, // عرض کامل
+      height: 52,
+      width: double.infinity,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10), // گوشه‌های گرد
+            borderRadius: BorderRadius.circular(10),
           ),
           textStyle: const TextStyle(
             fontFamily: 'Shabnam',
@@ -33,7 +33,7 @@ class CustomButton extends StatelessWidget {
         child: Text(
           text,
           style: const TextStyle(
-            color: Colors.black, // رنگ متن اصلی
+            color: Colors.black,
             fontWeight: FontWeight.bold,
             shadows: [
               Shadow(offset: Offset(2, 2), color: Colors.white),
