@@ -6,7 +6,7 @@ import 'models/transaction.dart';
 import 'models/investment.dart';
 import 'models/future_purchase.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // مقداردهی اولیه Hive
@@ -17,16 +17,18 @@ void main() async {
   Hive.registerAdapter(InvestmentAdapter());
   Hive.registerAdapter(FuturePurchaseAdapter());
 
-  // باز کردن Boxها
+  // باز کردن Boxها با null-safety و آماده استفاده
   await Hive.openBox<Transaction>('transactions');
   await Hive.openBox<Investment>('investments');
   await Hive.openBox<FuturePurchase>('futurePurchases');
-  await Hive.openBox<String>('categories'); // اضافه شده برای دسته‌بندی خریدها
+  await Hive.openBox<String>('categories');
 
-  runApp(ShayanWalletApp());
+  runApp(const ShayanWalletApp());
 }
 
 class ShayanWalletApp extends StatelessWidget {
+  const ShayanWalletApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
