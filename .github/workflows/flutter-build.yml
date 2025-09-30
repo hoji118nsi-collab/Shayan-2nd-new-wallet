@@ -25,10 +25,11 @@ jobs:
       - name: Disable Flutter analytics
         run: flutter config --no-analytics
 
-      # 4. پاکسازی بیلدهای قبلی و نصب dependencies
-      - name: Clean previous builds and get dependencies
+      # 4. پاکسازی بیلدهای قبلی و به‌روزرسانی پکیج‌ها
+      - name: Clean previous builds and upgrade dependencies
         run: |
           flutter clean
+          flutter pub upgrade --major-versions
           flutter pub get
 
       # 5. بیلد APK
