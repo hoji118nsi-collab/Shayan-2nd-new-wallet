@@ -8,80 +8,81 @@ import 'add_purchase_page.dart';
 import 'future_purchases_page.dart';
 import 'statistics_page.dart';
 import 'select_date_range_page.dart';
-import 'add_transaction_page.dart'; // اضافه شده برای ورود پول
+import 'add_transaction_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   int walletAmount = 0;
+  late final Box<Transaction> transactionsBox;
+  late final Box<Investment> investmentsBox;
 
-  void calculateWallet() {
+  @override
+  void initState() {
+    super.initState();
     if (Hive.isBoxOpen('transactions')) {
-      final transactions = Hive.box<Transaction>('transactions').values.toList();
-      int sum = 0;
-      for (var t in transactions) sum += t.amount;
-      setState(() {
-        walletAmount = sum;
-      });
+      transactionsBox = Hive.box<Transaction>('transactions');
+      transactionsBox.watch().listen((event) => _calculateWallet());
+    }
+    if (Hive.isBoxOpen('investments')) {
+      investmentsBox = Hive.box<Investment>('investments');
+    }
+    _calculateWallet();
+  }
+
+  void _calculateWallet() {
+    if (Hive.isBoxOpen('transactions')) {
+      final txs = Hive.box<Transaction>('transactions').values.toList();
+      final sum = txs.fold<int>(0, (prev, t) => prev + t.amount);
+      setState(() => walletAmount = sum);
     }
   }
 
-  void calculateInvestment() async {
+  void _calculateInvestment() {
     if (!Hive.isBoxOpen('investments')) return;
-
     final investBox = Hive.box<Investment>('investments');
     if (investBox.isEmpty) {
       investBox.add(Investment(amount: 0));
     }
-
-    int currentInvestment = investBox.getAt(0)!.amount;
+    int currentInvestment = investBox.getAt(0)?.amount ?? 0;
     int remaining = walletAmount > 0 ? walletAmount : 0;
+
     if (remaining > 0) {
       int bonus = remaining;
       investBox.putAt(0, Investment(amount: currentInvestment + remaining + bonus));
 
       if (Hive.isBoxOpen('transactions')) {
-        final transactionsBox = Hive.box<Transaction>('transactions');
-        transactionsBox.add(Transaction(
-          title: 'انتقال به صندوق سرمایه گذاری',
-          amount: -remaining,
-          date: DateTime.now(),
-        ));
+        Hive.box<Transaction>('transactions').add(
+          Transaction(
+            title: 'انتقال به صندوق سرمایه گذاری',
+            amount: -remaining,
+            date: DateTime.now(),
+          ),
+        );
       }
-
-      calculateWallet();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    calculateWallet();
-
-    if (Hive.isBoxOpen('transactions')) {
-      Hive.box<Transaction>('transactions').watch().listen((event) {
-        calculateWallet();
-      });
+      _calculateWallet();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (!Hive.isBoxOpen('investments')) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     final investBox = Hive.box<Investment>('investments');
-    int investAmount = investBox.isNotEmpty ? investBox.getAt(0)!.amount : 0;
+    final investAmount = investBox.getAt(0)?.amount ?? 0;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('کیف پول شایان'),
+        title: const Text('کیف پول شایان'),
         centerTitle: true,
       ),
       body: Stack(
@@ -96,14 +97,13 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // کارت‌های شفاف
                 CardWidget(title: "کیف پول", amount: walletAmount),
                 CardWidget(title: "موجودی صندوق سرمایه گذاری", amount: investAmount),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 CustomButton(
                   text: "ثبت ورود پول",
-                  color: Color(0xFF27AE60),
+                  color: const Color(0xFF27AE60),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -111,11 +111,11 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 CustomButton(
                   text: "ثبت خرید جدید",
-                  color: Color(0xFFF28C28),
+                  color: const Color(0xFFF28C28),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -123,11 +123,11 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 CustomButton(
                   text: "مشاهده خریدهای انجام شده",
-                  color: Color(0xFF28B463),
+                  color: const Color(0xFF28B463),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -135,45 +135,44 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 CustomButton(
                   text: "انتقال به صندوق سرمایه گذاری",
-                  color: Color(0xFF2874A6),
+                  color: const Color(0xFF2874A6),
                   onPressed: () {
-                    calculateInvestment();
+                    _calculateInvestment();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('پس‌انداز به صندوق سرمایه گذاری منتقل شد!')),
+                      const SnackBar(content: Text('پس‌انداز به صندوق سرمایه گذاری منتقل شد!')),
                     );
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 CustomButton(
                   text: "لیست خریدهای آتی",
-                  color: Color(0xFF8E44AD),
+                  color: const Color(0xFF8E44AD),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => FuturePurchasesPage()),
+                      MaterialPageRoute(builder: (_) => const FuturePurchasesPage()),
                     );
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
                 CustomButton(
                   text: "مشاهده آمار ماهانه و سالانه",
-                  color: Color(0xFFF28C28),
+                  color: const Color(0xFFF28C28),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => StatisticsPage()),
+                      MaterialPageRoute(builder: (_) => const StatisticsPage()),
                     );
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-                // دکمه تست Hive
                 CustomButton(
                   text: "تست Hive",
                   color: Colors.blue,
@@ -181,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                     try {
                       if (!Hive.isBoxOpen('transactions') || !Hive.isBoxOpen('investments')) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Box ها هنوز باز نشده‌اند ❌')),
+                          const SnackBar(content: Text('Box ها هنوز باز نشده‌اند ❌')),
                         );
                         return;
                       }
@@ -195,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                       }
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Box ها درست باز شدند و داده تستی اضافه شد ✅')),
+                        const SnackBar(content: Text('Box ها درست باز شدند و داده تستی اضافه شد ✅')),
                       );
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
