@@ -5,7 +5,7 @@ import '../widgets/custom_button.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final bool isIncome; // true = درآمد، false = هزینه
-  AddTransactionPage({required this.isIncome});
+  const AddTransactionPage({Key? key, required this.isIncome}) : super(key: key);
 
   @override
   _AddTransactionPageState createState() => _AddTransactionPageState();
@@ -16,12 +16,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   final TextEditingController _amountController = TextEditingController();
 
   void _saveTransaction() {
-    final title = _titleController.text;
-    final amount = int.tryParse(_amountController.text) ?? 0;
+    final title = _titleController.text.trim();
+    final amount = int.tryParse(_amountController.text.trim()) ?? 0;
 
     if (title.isEmpty || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('لطفاً عنوان و مبلغ معتبر وارد کنید')),
+        const SnackBar(content: Text('لطفاً عنوان و مبلغ معتبر وارد کنید')),
       );
       return;
     }
@@ -34,6 +34,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
     Hive.box<Transaction>('transactions').add(transaction);
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,34 +61,34 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 TextField(
                   controller: _titleController,
                   decoration: InputDecoration(
                     labelText: "عنوان",
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     fillColor: Colors.white70,
                     filled: true,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _amountController,
                   decoration: InputDecoration(
                     labelText: "مبلغ",
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     fillColor: Colors.white70,
                     filled: true,
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 CustomButton(
                   text: "ثبت",
-                  color: Color(0xFFF28C28),
+                  color: const Color(0xFFF28C28),
                   onPressed: _saveTransaction,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomButton(
                   text: "انصراف",
                   color: Colors.grey.shade700,
