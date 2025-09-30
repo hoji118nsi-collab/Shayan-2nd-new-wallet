@@ -19,15 +19,15 @@ dependencies:
   intl: ^0.20.2
   table_calendar: ^3.0.9
   persian_datetime_picker: ^3.2.0
-  fluttertoast: ^9.0.0
-  assets_audio_player: ^3.1.1   # نسخه پایدار فعال
+  fluttertoast: ^8.2.8         # ⬅️ پایین آورده شد (سازگار با Flutter SDK)
+  assets_audio_player: ^3.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.13
   hive_generator: ^2.0.1
-  flutter_launcher_icons: ^0.13.1   # نسخه سازگار با path 1.8.3
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
