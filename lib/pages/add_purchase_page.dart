@@ -4,33 +4,36 @@ import '../models/transaction.dart';
 import '../widgets/custom_button.dart';
 
 class AddPurchasePage extends StatefulWidget {
+  const AddPurchasePage({Key? key}) : super(key: key);
+
   @override
   _AddPurchasePageState createState() => _AddPurchasePageState();
 }
 
 class _AddPurchasePageState extends State<AddPurchasePage> {
-  final _titleController = TextEditingController();
-  final _amountController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
   String? _selectedCategory;
 
-  late Box<String> categoryBox;
-  List<String> categories = [];
+  late final Box<String> categoryBox;
+  late List<String> categories;
 
   @override
   void initState() {
     super.initState();
     categoryBox = Hive.box<String>('categories');
 
-    // اگر Hive خالی بود، مقادیر پیش‌فرض را اضافه کن
     if (categoryBox.isEmpty) {
-      final defaultCategories = [
+      const defaultCategories = [
         'خوراکی (رستوران، سوپرمارکت)',
         'تفریح و سرگرمی',
         'کتاب و مطالعه',
         'لوازم التحریر و مدرسه',
         'خرید یهویی و بدون برنامه',
       ];
-      for (var cat in defaultCategories) categoryBox.add(cat);
+      for (var cat in defaultCategories) {
+        categoryBox.add(cat);
+      }
     }
 
     categories = categoryBox.values.toList();
@@ -38,44 +41,44 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
   }
 
   void _savePurchase() {
-    if (_selectedCategory != null &&
-        _titleController.text.isNotEmpty &&
-        _amountController.text.isNotEmpty) {
-      final amount = int.tryParse(_amountController.text);
+    final title = _titleController.text.trim();
+    final amountText = _amountController.text.trim();
+    if (_selectedCategory != null && title.isNotEmpty && amountText.isNotEmpty) {
+      final amount = int.tryParse(amountText);
       if (amount != null) {
         final box = Hive.box<Transaction>('transactions');
         box.add(Transaction(
-          title: _titleController.text,
+          title: title,
           amount: -amount,
           date: DateTime.now(),
         ));
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لطفاً مبلغ معتبر وارد کنید')),
+          const SnackBar(content: Text('لطفاً مبلغ معتبر وارد کنید')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('تمام فیلدها را پر کنید')),
+        const SnackBar(content: Text('تمام فیلدها را پر کنید')),
       );
     }
   }
 
-  void _addNewCategory() async {
-    final TextEditingController newCatController = TextEditingController();
+  Future<void> _addNewCategory() async {
+    final newCatController = TextEditingController();
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('افزودن دسته‌بندی جدید'),
+        title: const Text('افزودن دسته‌بندی جدید'),
         content: TextField(
           controller: newCatController,
-          decoration: InputDecoration(hintText: 'نام دسته‌بندی'),
+          decoration: const InputDecoration(hintText: 'نام دسته‌بندی'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('لغو'),
+            child: const Text('لغو'),
           ),
           TextButton(
             onPressed: () {
@@ -85,7 +88,7 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
               }
               Navigator.pop(context);
             },
-            child: Text('افزودن'),
+            child: const Text('افزودن'),
           ),
         ],
       ),
@@ -108,8 +111,13 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
     }
   }
 
-  void _cancel() {
-    Navigator.pop(context);
+  void _cancel() => Navigator.pop(context);
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -130,10 +138,10 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 60),
+                const SizedBox(height: 60),
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
-                  hint: Text('انتخاب دسته‌بندی خرید'),
+                  hint: const Text('انتخاب دسته‌بندی خرید'),
                   items: categories.map((cat) {
                     return DropdownMenuItem<String>(
                       value: cat,
@@ -147,7 +155,7 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _titleController,
                   decoration: InputDecoration(
@@ -157,7 +165,7 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _amountController,
                   keyboardType: TextInputType.number,
@@ -168,19 +176,19 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 CustomButton(
                   text: 'تایید',
-                  color: Color(0xFFF28C28),
+                  color: const Color(0xFFF28C28),
                   onPressed: _savePurchase,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomButton(
                   text: 'انصراف',
                   color: Colors.grey.shade700,
                   onPressed: _cancel,
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
           ),
