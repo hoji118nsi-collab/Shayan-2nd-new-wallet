@@ -4,6 +4,8 @@ import 'purchases_overview_page.dart';
 import '../widgets/custom_button.dart';
 
 class SelectDateRangePage extends StatefulWidget {
+  const SelectDateRangePage({Key? key}) : super(key: key);
+
   @override
   _SelectDateRangePageState createState() => _SelectDateRangePageState();
 }
@@ -46,14 +48,14 @@ class _SelectDateRangePageState extends State<SelectDateRangePage> {
         context,
         MaterialPageRoute(
           builder: (_) => PurchasesOverviewPage(
-            startDate: startDate!,
-            endDate: endDate!,
+            startDate: startDate,
+            endDate: endDate,
           ),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('لطفاً هر دو تاریخ را انتخاب کنید')),
+        const SnackBar(content: Text('لطفاً هر دو تاریخ را انتخاب کنید')),
       );
     }
   }
@@ -77,33 +79,33 @@ class _SelectDateRangePageState extends State<SelectDateRangePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 60),
+                const SizedBox(height: 60),
                 CustomButton(
                   text: startDate == null
                       ? 'تاریخ شروع'
                       : 'تاریخ شروع: ${startDate!.formatCompactDate()}',
-                  color: Color(0xFFF28C28),
+                  color: const Color(0xFFF28C28),
                   onPressed: _pickStartDate,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomButton(
                   text: endDate == null
                       ? 'تاریخ پایان'
                       : 'تاریخ پایان: ${endDate!.formatCompactDate()}',
-                  color: Color(0xFF28B463),
+                  color: const Color(0xFF28B463),
                   onPressed: _pickEndDate,
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 Row(
                   children: [
                     Expanded(
                       child: CustomButton(
                         text: 'مشاهده',
-                        color: Color(0xFF2874A6),
+                        color: const Color(0xFF2874A6),
                         onPressed: _viewPurchases,
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: CustomButton(
                         text: 'انصراف',
